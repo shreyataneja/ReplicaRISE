@@ -18,7 +18,7 @@ export default Lang.Templatable('Widget.Services', class Services extends Widget
  getAllServices()
 {
 
-   const url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("getAllServices_uname").value;
+   const url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("getAllServices_uname").value;
   var p1 = Net.GetRequest(url);
    
    var c = Promise.all([p1]).then((data) => {
@@ -31,7 +31,7 @@ export default Lang.Templatable('Widget.Services', class Services extends Widget
    
    
   
-   var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("user_service_uname").value
+   var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("user_service_uname").value
          + '/' +document.getElementById("user_service_name").value;
    var p1 = Net.GetRequest(url);
    
@@ -55,7 +55,7 @@ export default Lang.Templatable('Widget.Services', class Services extends Widget
        };
 
        var json = JSON.stringify(data);
-       var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("create_service_uname").value
+       var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("create_service_uname").value
             + '/' +document.getElementById("create_service_name").value 
             +"/"+document.getElementById("create_service_password").value;
 
@@ -71,7 +71,7 @@ export default Lang.Templatable('Widget.Services', class Services extends Widget
  deleteService()
 {  
      
-       var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("delete_service_uname").value
+       var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("delete_service_uname").value
             + '/' +document.getElementById("delete_service_name").value 
             +"/"+document.getElementById("delete_service_oldpassword").value;
 

@@ -19,7 +19,7 @@ export default Lang.Templatable('Widget.Workspaces', class Workspaces extends Wi
 {
   
   
-  const url='http://localhost:8080/RISE_Replica/workspaces';
+  const url='http://localhost:8000/RISE_Replica/workspaces';
   var p1 = Net.GetRequest(url);
    
    var c = Promise.all([p1]).then((data) => {
@@ -32,7 +32,7 @@ export default Lang.Templatable('Widget.Workspaces', class Workspaces extends Wi
   
   
  
-  var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("getUserWorkspace_uname").value;
+  var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("getUserWorkspace_uname").value;
    var p1 = Net.GetRequest(url);
    
    var c = Promise.all([p1]).then((data) => {
@@ -55,7 +55,7 @@ export default Lang.Templatable('Widget.Workspaces', class Workspaces extends Wi
       };
 
       var json = JSON.stringify(data);
-      var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("create_workspace_uname").value
+      var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("create_workspace_uname").value
             +"/"+document.getElementById("create_workspace_password").value;
 
       
@@ -69,7 +69,7 @@ export default Lang.Templatable('Widget.Workspaces', class Workspaces extends Wi
  deleteWorkspace()
 { 
     
-      var url='http://localhost:8080/RISE_Replica/workspaces/'+document.getElementById("delete_workspace_uname").value
+      var url='http://localhost:8000/RISE_Replica/workspaces/'+document.getElementById("delete_workspace_uname").value
             +"/"+document.getElementById("delete_workspace_password").value;
 
       

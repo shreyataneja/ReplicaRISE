@@ -19,7 +19,7 @@ export default Lang.Templatable('Widget.Accounts', class Accounts extends Widget
 {
 	
 	
-	const url='http://localhost:8080/RISE_Replica/Accounts';
+	const url='http://localhost:8000/RISE_Replica/Accounts';
 
 
 	var p1 = Net.GetRequest(url);
@@ -46,7 +46,7 @@ export default Lang.Templatable('Widget.Accounts', class Accounts extends Widget
 	    };
 
 	    var json = JSON.stringify(data);
-	    var url='http://localhost:8080/RISE_Replica/Accounts/'+document.getElementById("uname").value;
+	    var url='http://localhost:8000/RISE_Replica/Accounts/'+document.getElementById("uname").value;
 
 	    var p1 = Net.PutRequest(url,json);
 	    console.log(p1);
@@ -65,7 +65,7 @@ export default Lang.Templatable('Widget.Accounts', class Accounts extends Widget
   };
 
   var json = JSON.stringify(data);
-  var url='http://localhost:8080/RISE_Replica/Accounts/'+document.getElementById("update_uname").value
+  var url='http://localhost:8000/RISE_Replica/Accounts/'+document.getElementById("update_uname").value
   				+"/"+document.getElementById("oldpassword").value;
 
   
@@ -79,7 +79,7 @@ export default Lang.Templatable('Widget.Accounts', class Accounts extends Widget
  deleteAccount()
 {	
 	  
-	    var url='http://localhost:8080/RISE_Replica/Accounts/'+document.getElementById("delete_uname").value;
+	    var url='http://localhost:8000/RISE_Replica/Accounts/'+document.getElementById("delete_uname").value;
 
 	    var p1 = Net.DeleteRequest(url);
 	    console.log(p1);
