@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -46,8 +48,9 @@ public class FrameworkController {
 	}
 	@PostMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}")
 	public String addFramework(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, @PathVariable String oldPassword,
-			@RequestBody String accountProperties) throws IOException {
-		int x = service.addFramework(username, servicetype,framework, oldPassword, accountProperties);
+			@RequestPart(value = "barber", required = true) MultipartFile file) throws IOException {
+		// System.out.println(file);
+		int x = service.postFiles(username, servicetype,framework, oldPassword, file);
 		if (x == 200)
 			return "Status = 200 : Framework Updated";
 

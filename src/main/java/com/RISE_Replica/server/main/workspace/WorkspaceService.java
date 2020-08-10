@@ -18,7 +18,7 @@ public class WorkspaceService {
 	
 	
 	public JSONObject getAllWorkspaces() throws IOException {
-		 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		URL = URL.concat("?fmt=xml");
 
@@ -51,7 +51,7 @@ public class WorkspaceService {
 	}
 
 	public JSONObject getWorkspace(String username) throws IOException {
-		String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+		String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		URL = URL.concat("/");
 		URL = URL.concat(username);
@@ -92,7 +92,7 @@ public class WorkspaceService {
 	
 	
 	public  int updateWorkspace(String username,String oldPassword, String accountProperties) throws IOException {
-	 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+	 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		 JSONObject json = new JSONObject(accountProperties.toString());
 		  String xml = XML.toString(json);
@@ -142,7 +142,7 @@ public class WorkspaceService {
 		return responseCode;
 	}
 	public  int deleteWorkspace(String username, String oldPassword) throws IOException {
-	 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+	 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		URL = URL.concat("/");
 		URL = URL.concat(username);

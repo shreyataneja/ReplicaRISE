@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component  
 public class AccountsDaoService {
-	private static String URL =  "http://100.25.4.105:8080/cdpp/admin/accounts" ;
+	private static String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/admin/accounts" ;
     
 	
 	private static 	String user = "admin";

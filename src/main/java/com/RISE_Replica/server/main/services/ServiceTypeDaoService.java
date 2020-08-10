@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class ServiceTypeDaoService {
 
 	public JSONObject getWorkspaceService(String userworkspace, String servicetype) throws IOException {
-		 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 		 	URL = URL.concat("/");
 			URL = URL.concat(userworkspace);
 			URL = URL.concat("/");
@@ -53,7 +53,7 @@ public class ServiceTypeDaoService {
 	}
 
 	public int updateService(String username, String servicetype, String oldPassword, String accountProperties)  throws IOException {
-		 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		 JSONObject json = new JSONObject(accountProperties.toString());
 		  String xml = XML.toString(json);
@@ -106,7 +106,7 @@ public class ServiceTypeDaoService {
 	}
 
 	public int deleteService(String username, String servicetype, String oldPassword)  throws IOException{
-		 String URL =  "http://100.25.4.105:8080/cdpp/sim/workspaces" ;
+		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 			URL = URL.concat("/");
 			URL = URL.concat(username);
