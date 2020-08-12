@@ -14,6 +14,7 @@ import com.github.underscore.lodash.U;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -73,61 +74,44 @@ public class FrameworkService {
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		
-	
-		URL = URL.concat("/");
-		URL = URL.concat(username);
-		URL = URL.concat("/");
-		URL = URL.concat(servicetype);
-		URL = URL.concat("/");
-		URL = URL.concat(framework);
-		URL = URL.concat("?zdir=barber");
-		
-		URL obj = new URL(URL);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("POST");
-
-		con.setRequestProperty("Content-Type", "application/zip");
-		  String auth = username + ":" + oldPassword;
-		  byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
-		  String authValue = "Basic " + new String(encodedAuth);
-
-		con.setRequestProperty("Authorization", authValue);
-		
-		con.setDoOutput(true);
-
-		 LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-		    String response;
-		    HttpStatus httpStatus = HttpStatus.CREATED;
-
-		    try {
-		        
-		            if (!file.isEmpty()) {
-		                map.add("files", new MultipartInputStreamFileResource(file.getInputStream(), file.getOriginalFilename()));
-		            }
-		            System.out.print(map);
-
+		// String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
+			URL = URL.concat("/");
+			URL = URL.concat(username);
+			URL = URL.concat("/");
+			URL = URL.concat(servicetype);
+			URL = URL.concat("/");
+			URL = URL.concat(framework);
+			URL = URL.concat("?zdir=barber");
+			ResponseEntity<String> response = null;
+			String message = "All's well.";
+			HttpStatus httpStatus = HttpStatus.CREATED;
+		    try {	
+		    	// AUTHORIZATION
+		    	String creds = username + ":" + oldPassword;
+		    	byte[] creds64 = Base64.encodeBase64(creds.getBytes(StandardCharsets.UTF_8));
+		    	// HEADERS PREPARATION
 		        HttpHeaders headers = new HttpHeaders();
-		        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
+		        headers.add("Content-Type", "application/zip");
+		        headers.add("Authorization", "Basic " + new String(creds64, "UTF-8"));
+		    	// BODY PREPARATION
+		        Resource fileResource = file.getResource();
+				LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+				map.add("file", fileResource);
+				// SEND REQUEST
 		        RestTemplate restTemplate = new RestTemplate();
-
-		        HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<>(map, headers);
-		        response = restTemplate.postForObject(URL, requestEntity, String.class);
-
-		    } catch (HttpStatusCodeException e) {
+		        HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
+		        response = restTemplate.postForEntity(URL, requestEntity, String.class);
+		    } 
+		    catch (HttpStatusCodeException e) {
 		        httpStatus = HttpStatus.valueOf(e.getStatusCode().value());
-		        response = e.getResponseBodyAsString();
-		        System.out.println(response);
-		    } catch (Exception e) {
+		        message = e.getResponseBodyAsString();
+		    } 
+		    catch (Exception e) {
 		        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-		        response = e.getMessage();
+		        message = e.getMessage();
 		    }
-		    System.out.println(response);
-		
-
-		int responseCode = con.getResponseCode();
-
-		return responseCode;
+		    System.out.println(message);
+			return response.getStatusCodeValue();
 	}
 
 	
