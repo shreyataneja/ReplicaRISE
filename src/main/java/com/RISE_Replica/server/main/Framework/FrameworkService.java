@@ -94,14 +94,7 @@ public class FrameworkService {
 		con.setRequestProperty("Authorization", authValue);
 		
 		con.setDoOutput(true);
-//		OutputStream outStream = con.getOutputStream();
-//		OutputStreamWriter outStreamWriter = new OutputStreamWriter(outStream, "UTF-8");
-//		GZIPOutputStream gzipOutputStream = new GZIPOutputStream(outStream);
-//	//	gzipOutputStream.write(buf, off, len);;
-//		//	outStreamWriter.write(file);
-//		outStreamWriter.flush();
-//		outStreamWriter.close();
-//		outStream.close();
+
 		 LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
 		    String response;
 		    HttpStatus httpStatus = HttpStatus.CREATED;
@@ -130,26 +123,10 @@ public class FrameworkService {
 		        response = e.getMessage();
 		    }
 		    System.out.println(response);
-//		    return new ResponseEntity<>(response, httpStatus);
-//		
+		
 
 		int responseCode = con.getResponseCode();
-//		System.out.println("POST Response Code :: " + responseCode);
-//
-//		if (responseCode == HttpURLConnection.HTTP_OK) { //success
-//			BufferedReader in = new BufferedReader(new InputStreamReader(
-//					con.getInputStream()));
-//			String inputLine;
-//			StringBuffer response2 = new StringBuffer();
-//
-//			while ((inputLine = in.readLine()) != null) {
-//				response2.append(inputLine);			}
-//			in.close();
-//
-//			System.out.println(response.toString());
-//		} else {
-//			System.out.println("POST request not worked");
-//		}
+
 		return responseCode;
 	}
 
