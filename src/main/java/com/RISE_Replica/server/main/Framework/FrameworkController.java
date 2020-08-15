@@ -47,10 +47,10 @@ public class FrameworkController {
 			return "Status : " + Integer.toString(x) + "\n Problem occured while updating Framework";
 	}
 	@PostMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}")
-	public String addFramework(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, @PathVariable String oldPassword,
+	public String addFramework(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework,@PathVariable String  zdirvar, @PathVariable String oldPassword,
 			@RequestPart(value = "barber", required = true) MultipartFile file) throws IOException {
-		// System.out.println(file);
-		int x = service.postFiles(username, servicetype,framework, oldPassword, file);
+	
+		int x = service.postFiles(username, servicetype,framework, zdirvar, oldPassword, file);
 		if (x == 200)
 			return "Status = 200 : Framework Updated";
 

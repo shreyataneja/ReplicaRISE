@@ -68,7 +68,7 @@ public class FrameworkService {
 	
 	}
 
-	public int postFiles(String username, String servicetype, String framework, String oldPassword, MultipartFile file)
+	public int postFiles(String username, String servicetype, String framework,String zdirvar, String oldPassword, MultipartFile file)
 			 throws IOException
 	{
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
@@ -81,18 +81,19 @@ public class FrameworkService {
 			URL = URL.concat(servicetype);
 			URL = URL.concat("/");
 			URL = URL.concat(framework);
-			URL = URL.concat("?zdir=barber");
+			URL = URL.concat("?zdir=");
+			URL = URL.concat(zdirvar);
 			ResponseEntity<String> response = null;
-			String message = "All's well.";
+			String message = "Files sent!!";
 			HttpStatus httpStatus = HttpStatus.CREATED;
 		    try {	
 		    	// AUTHORIZATION
-		    	String creds = username + ":" + oldPassword;
-		    	byte[] creds64 = Base64.encodeBase64(creds.getBytes(StandardCharsets.UTF_8));
+		    	String auth = username + ":" + oldPassword;
+		    	byte[] auth64 = Base64.encodeBase64(auth.getBytes(StandardCharsets.UTF_8));
 		    	// HEADERS PREPARATION
 		        HttpHeaders headers = new HttpHeaders();
 		        headers.add("Content-Type", "application/zip");
-		        headers.add("Authorization", "Basic " + new String(creds64, "UTF-8"));
+		        headers.add("Authorization", "Basic " + new String(auth64, "UTF-8"));
 		    	// BODY PREPARATION
 		        Resource fileResource = file.getResource();
 				LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
