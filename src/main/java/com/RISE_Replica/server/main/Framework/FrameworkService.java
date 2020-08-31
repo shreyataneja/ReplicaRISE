@@ -8,8 +8,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.zip.GZIPOutputStream;
-
 import com.github.underscore.lodash.U;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
@@ -18,7 +16,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -198,7 +195,7 @@ public class FrameworkService {
 		con.setDoOutput(true);
 		OutputStream outStream = con.getOutputStream();
 		OutputStreamWriter outStreamWriter = new OutputStreamWriter(outStream, "UTF-8");
-		//String requestedXml= "<Account><Password>AAAA</Password><Admin>false</Admin></Account>";
+	
 		outStreamWriter.write(xml);
 		outStreamWriter.flush();
 		outStreamWriter.close();

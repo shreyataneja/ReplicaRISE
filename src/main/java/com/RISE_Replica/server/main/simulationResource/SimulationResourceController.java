@@ -24,37 +24,37 @@ public class SimulationResourceController {
 	private SimulationResourceService service;
 	
 	@GetMapping(path = "/workspaces/{username}/{servicetype}/{framework}/simulation", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> getState(@PathVariable String username,@PathVariable String servicetype,@PathVariable String framework) throws IOException {
-		JSONObject res = service.getState(username,servicetype,framework);
+	public ResponseEntity<String> getSimulation(@PathVariable String username,@PathVariable String servicetype,@PathVariable String framework) throws IOException {
+		JSONObject res = service.getSimulation(username,servicetype,framework);
 		return ResponseEntity.status(HttpStatus.OK).body(res.toString());
 
 	}
-	@PutMapping(path = "/workspaces/{username}/{servicetype}/{framework}/simulation")
-	public String updateState(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
-			@RequestParam String oldPassword) throws IOException {
-		int x = service.updateState(username, servicetype,framework, oldPassword);
+	@PutMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}/simulation")
+	public String startSimulation(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
+			@PathVariable String oldPassword) throws IOException {
+		int x = service.startSimulation(username, servicetype,framework, oldPassword);
 		if (x == 202)
 			return "Status = 202 :Simulation Started";
 
 		else
 			return "Status : " + Integer.toString(x) + "\n Problem occured";
 	}
-	@PostMapping(path = "/workspaces/{username}/{servicetype}/{framework}/simulation")
-	public String addState(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, @RequestParam String oldPassword,
+	@PostMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}/simulation")
+	public String addMessage(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, @PathVariable String oldPassword,
 			@RequestBody String accountProperties) throws IOException {
-		int x = service.addState(username, servicetype,framework, oldPassword, accountProperties);
-		if (x == 200)
+		int x = service.addMessage(username, servicetype,framework, oldPassword, accountProperties);
+		if (x == 202)
 			return "Status = 202 : Message posted";
 
 	
 		else
 			return "Status : " + Integer.toString(x) + "\n Problem occured";
 	}
-	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/simulation")
-	public String deleteState(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
-			@RequestParam String oldPassword) throws IOException {
-		int x = service.deleteState(username, servicetype,framework, oldPassword);
-		if (x == 200)
+	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}/simulation")
+	public String stopSimulation(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
+			@PathVariable String oldPassword) throws IOException {
+		int x = service.stopSimulation(username, servicetype,framework, oldPassword);
+		if (x == 202)
 			return "Status = 202 : Simulation Stoped";
 
 		else
@@ -70,9 +70,9 @@ public class SimulationResourceController {
 		return x;
 
 	}
-	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/results")
+	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}/results")
 	public String deleteSimResults(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
-			@RequestParam String oldPassword) throws IOException {
+			@PathVariable String oldPassword) throws IOException {
 		int x = service.deleteSimResults(username, servicetype,framework, oldPassword);
 		if (x == 200)
 			return "Status = 200 : Simulation Results Deleted";
@@ -89,9 +89,9 @@ public class SimulationResourceController {
 		return x;
 
 	}
-	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/debug")
+	@DeleteMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}/debug")
 	public String deleteDebugResults(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, 
-			@RequestParam String oldPassword) throws IOException {
+			@PathVariable String oldPassword) throws IOException {
 		int x = service.deleteDebugResults(username, servicetype,framework, oldPassword);
 		if (x == 200)
 			return "Status = 200 : Simulation Debug Results Deleted";
