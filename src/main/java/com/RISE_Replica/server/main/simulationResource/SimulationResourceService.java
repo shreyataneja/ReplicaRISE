@@ -2,6 +2,7 @@ package com.RISE_Replica.server.main.simulationResource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -9,17 +10,25 @@ import java.net.HttpURLConnection;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Vector;
+import java.util.zip.ZipInputStream;
 
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.stereotype.Component;
 
+import com.RISE_Replica.server.Util.ConnectionFactory;
+import com.RISE_Replica.server.Util.DbUtil;
 import com.github.underscore.lodash.U;
 
 @Component
 public class SimulationResourceService {
-
+	
 	public JSONObject getSimulation(String username, String servicetype, String framework) throws IOException {
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 		 	URL = URL.concat("/");
@@ -237,6 +246,7 @@ public class SimulationResourceService {
 	 * Simulation Results -  Get & Delete
 	 */
 	public String getSimResults(String username, String servicetype, String framework)  throws IOException {
+		 Connection connection = ConnectionFactory.getConnection();
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 		 	URL = URL.concat("/");
 			URL = URL.concat(username);
@@ -245,12 +255,44 @@ public class SimulationResourceService {
 			URL = URL.concat("/");
 			URL = URL.concat(framework);
 			URL = URL.concat("/results");
-
 			 URL obj = new URL(URL);
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 				con.setRequestMethod("GET");
+				con.setRequestProperty("Content-Type", "application/zip");
+				int responseCode = con.getResponseCode();
+				System.out.println("GET Response Code :: " + con.getResponseCode());
+				if (responseCode == HttpURLConnection.HTTP_OK) { // success
+				//	InputStreamReader filestream = new InputStreamReader(con.getInputStream());
+					InputStream is = con.getInputStream();
+					
+					try{
+			    		
+						String sql = "UPDATE framework SET  outputfiles = ? where frameworkname = ? and servicename= ? and workspacename = ?";
+						
+						PreparedStatement pstmt = connection.prepareStatement(sql);
+						pstmt.setBinaryStream(1, is);;
+						pstmt.setString(2, framework);
+			            pstmt.setString(3, servicetype);
+			            pstmt.setString(4, username);
+			            
+			            
 
-				return URL;
+			            pstmt.executeUpdate();
+					
+					}
+					catch (SQLException e) {
+			            System.out.println("SQLException in get() method");
+			            e.printStackTrace();
+			        } finally {
+			            DbUtil.close(connection);
+			        }
+					
+					return URL;
+				} else {
+				
+					
+					return "GET request not worked";
+				}
 	
 	}
 
@@ -311,6 +353,7 @@ public class SimulationResourceService {
 	 */
 	
 	public String getDebugResults(String username, String servicetype, String framework)  throws IOException {
+		 Connection connection = ConnectionFactory.getConnection();
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 		 	URL = URL.concat("/");
 			URL = URL.concat(username);
@@ -323,10 +366,38 @@ public class SimulationResourceService {
 			 URL obj = new URL(URL);
 				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 				con.setRequestMethod("GET");
-
+				con.setRequestProperty("Content-Type", "application/zip");
 				int responseCode = con.getResponseCode();
 				System.out.println("GET Response Code :: " + con.getResponseCode());
-				return URL;
+				if (responseCode == HttpURLConnection.HTTP_OK) { // success
+				//	InputStreamReader filestream = new InputStreamReader(con.getInputStream());
+					InputStream is = con.getInputStream();
+					
+					try{
+			    		
+						String sql = "UPDATE framework SET  debugfiles = ? where frameworkname = ? and servicename= ? and workspacename = ?";
+						
+						PreparedStatement pstmt = connection.prepareStatement(sql);
+						pstmt.setBinaryStream(1, is);;
+						pstmt.setString(2, framework);
+			            pstmt.setString(3, servicetype);
+			            pstmt.setString(4, username);
+			            pstmt.executeUpdate();
+					
+					}
+					catch (SQLException e) {
+			            System.out.println("SQLException in get() method");
+			            e.printStackTrace();
+			        } finally {
+			            DbUtil.close(connection);
+			        }
+					
+					return URL;
+				} else {
+				
+					
+					return "GET request not worked";
+				}
 	
 	}
 
@@ -383,4 +454,39 @@ public class SimulationResourceService {
 
 	}
 
+	public String getAllInfo(String username, String servicetype, String framework) throws IOException {
+		 Connection connection = ConnectionFactory.getConnection();
+
+		getDebugResults(username,servicetype,framework);
+		getSimResults(username,servicetype,framework);
+		
+		 ResultSet results = null;
+	        try {
+	        	
+	            connection = ConnectionFactory.getConnection();
+	            String sql = "SELECT * FROM framework where  frameworkname = ? and servicename= ? and workspacename = ?";
+
+						
+						PreparedStatement pstmt = connection.prepareStatement(sql);
+			
+						pstmt.setString(1, framework);
+			            pstmt.setString(2, servicetype);
+			            pstmt.setString(3, username);
+
+	            results = pstmt.executeQuery();
+//	            while (results.next())
+//	            {
+//	            	//
+//	            }
+	            
+	        } catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+
+	
+return null;
+}
 }

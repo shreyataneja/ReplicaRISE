@@ -1,13 +1,19 @@
 package com.RISE_Replica.server.main.Framework;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 import com.github.underscore.lodash.U;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONObject;
@@ -22,9 +28,18 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import java.sql.SQLException;
+
+import javax.swing.JOptionPane;
+
+import com.RISE_Replica.server.Util.ConnectionFactory;
+import com.RISE_Replica.server.Util.DbUtil;
 
 @Component
 public class FrameworkService {
+	
+	private PreparedStatement preparedStatment;
+	
 	public JSONObject getFramework(String username, String servicetype, String framework) throws IOException {
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 		 	URL = URL.concat("/");
@@ -70,8 +85,6 @@ public class FrameworkService {
 	{
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
-		
-		// String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 			URL = URL.concat("/");
 			URL = URL.concat(username);
 			URL = URL.concat("/");
@@ -82,6 +95,7 @@ public class FrameworkService {
 			URL = URL.concat(zdirvar);
 			ResponseEntity<String> response = null;
 			String message = "Files sent!!";
+			
 			HttpStatus httpStatus = HttpStatus.CREATED;
 		    try {	
 		    	// AUTHORIZATION
@@ -108,7 +122,34 @@ public class FrameworkService {
 		        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 		        message = e.getMessage();
 		    }
-		    System.out.println(message);
+		    if( response.getStatusCodeValue()==200)
+		    { Connection connection = ConnectionFactory.getConnection();
+		    	try{
+		    		
+		    		InputStream initialStream = file.getInputStream();
+		    		
+		    	//	FileInputStream fis = new FileInputStream(file);
+					String sql = "UPDATE framework SET  inputfiles = ? where frameworkname = ? and servicename= ? and workspacename = ?";
+					
+					PreparedStatement pstmt = connection.prepareStatement(sql);
+					pstmt.setBinaryStream(1, initialStream);;
+					pstmt.setString(2, framework);
+		            pstmt.setString(3, servicetype);
+		            pstmt.setString(4, username);
+		            
+		            
+
+		            pstmt.executeUpdate();
+				
+				}
+		    	catch (SQLException e) {
+		            System.out.println("SQLException in get() method");
+		            e.printStackTrace();
+		        } finally {
+		            DbUtil.close(connection);
+		        }
+					
+		    }
 			return response.getStatusCodeValue();
 	}
 
@@ -180,6 +221,8 @@ public class FrameworkService {
 		URL = URL.concat(servicetype);
 		URL = URL.concat("/");
 		URL = URL.concat(framework);
+	
+		
 		
 		URL obj = new URL(URL);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -206,6 +249,53 @@ public class FrameworkService {
 		int responseCode = con.getResponseCode();
 		System.out.println("PUT Response Code :: " + responseCode);
 
+		if (responseCode == 200)//update
+		{ Connection connection = ConnectionFactory.getConnection();
+			try{
+				String sql = "UPDATE framework SET  xmlstring = ? where frameworkname = ? and servicename= ? and workspacename = ?";
+				
+				PreparedStatement pstmt = connection.prepareStatement(sql);
+				pstmt.setString(1, xml);
+				pstmt.setString(2, framework);
+	            pstmt.setString(3, servicetype);
+	            pstmt.setString(4, username);
+	            
+	            
+
+	            pstmt.executeUpdate();
+			
+			}
+			catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+				
+		}
+		else if (responseCode == 201)//create
+		{ Connection connection = ConnectionFactory.getConnection();
+			try{
+				String sql = "INSERT INTO framework(frameworkname,servicename, workspacename, xmlstring) VALUES (?, ?, ?, ?)";
+				
+				PreparedStatement pstmt = connection.prepareStatement(sql);
+	            pstmt.setString(1, framework);
+	            pstmt.setString(2, servicetype);
+	            pstmt.setString(3, username);
+	            pstmt.setString(4, xml);
+	            
+
+	            pstmt.executeUpdate();
+			
+			}
+			catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+			
+		}
 		if (responseCode == HttpURLConnection.HTTP_OK) { //success
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					con.getInputStream()));

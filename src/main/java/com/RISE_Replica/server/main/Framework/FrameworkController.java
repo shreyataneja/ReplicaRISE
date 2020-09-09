@@ -54,9 +54,6 @@ public class FrameworkController {
 		if (x == 200)
 			return "Status = 200 : Framework Updated";
 
-		else if (x == 201)
-			return "Status = 201 : Framework Created";
-
 		else
 			return "Status : " + Integer.toString(x) + "\n Problem occured while updating Framework";
 	}

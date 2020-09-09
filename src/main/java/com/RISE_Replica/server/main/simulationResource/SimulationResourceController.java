@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -98,5 +97,14 @@ public class SimulationResourceController {
 
 		else
 			return "Status : " + Integer.toString(x) + "\n Problem occured";
+	}
+	/*
+	 * Simulation Everything - Get  
+	 */
+	@GetMapping(path = "/workspaces/{username}/{servicetype}/{framework}/getAllInfo")
+	public String getAllInfo(@PathVariable String username,@PathVariable String servicetype,@PathVariable String framework) throws IOException {
+		String x = service.getAllInfo(username,servicetype,framework);
+		return x;
+
 	}
 }
