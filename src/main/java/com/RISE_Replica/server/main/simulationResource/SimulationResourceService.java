@@ -1,6 +1,7 @@
 package com.RISE_Replica.server.main.simulationResource;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,7 +15,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -274,8 +278,6 @@ public class SimulationResourceService {
 						pstmt.setString(2, framework);
 			            pstmt.setString(3, servicetype);
 			            pstmt.setString(4, username);
-			            
-			            
 
 			            pstmt.executeUpdate();
 					
@@ -464,7 +466,7 @@ public class SimulationResourceService {
 	        try {
 	        	
 	            connection = ConnectionFactory.getConnection();
-	            String sql = "SELECT * FROM framework where  frameworkname = ? and servicename= ? and workspacename = ?";
+	            String sql = "SELECT id,frameworkname,inputfiles,outputfiles,debugfiles,servicename,workspacename,xmlstring FROM framework where  frameworkname = ? and servicename= ? and workspacename = ?";
 
 						
 						PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -474,10 +476,34 @@ public class SimulationResourceService {
 			            pstmt.setString(3, username);
 
 	            results = pstmt.executeQuery();
-//	            while (results.next())
-//	            {
-//	            	//
-//	            }
+	           
+	            while (results.next())
+	            {System.out.println( results.getInt(1) );
+	            	System.out.println( results.getString(2) );
+	            	
+	            	InputStream input = new ByteArrayInputStream(results.getBytes(3) );
+	            	  List<ZipEntry> entries = new ArrayList<>();
+	            	  ZipInputStream zi = null;
+	            	    try {
+	            	        zi = new ZipInputStream(new ByteArrayInputStream(results.getBytes(3)));
+	            	      
+	            	        ZipEntry zipEntry = null;
+	            	        while ((zipEntry = zi.getNextEntry()) != null) {
+	            	            entries.add(zipEntry);
+	            	        }
+	            	    } finally {
+	            	        if (zi != null) {
+	            	            zi.close();
+	            	        }
+	            	    }
+	            	   // return entries;
+	    			System.out.println(entries);
+//	            	System.out.println( results.getBytes(4)  );
+//	            	System.out.println( results.getBytes(5)  );
+//	            	System.out.println( results.getString(6) );
+//	            	System.out.println( results.getString(7) );
+//	            	System.out.println( results.getString(8) );
+	            }
 	            
 	        } catch (SQLException e) {
 	            System.out.println("SQLException in get() method");

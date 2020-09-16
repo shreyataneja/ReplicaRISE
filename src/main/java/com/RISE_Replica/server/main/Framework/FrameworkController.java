@@ -32,25 +32,11 @@ public class FrameworkController {
 		return ResponseEntity.status(HttpStatus.OK).body(frameworkJson.toString());
 
 	}
-	@PutMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{oldPassword}")
-	public String updateFramework(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework, @PathVariable String oldPassword,
-			@RequestBody String accountProperties) throws IOException {
-		
-		int x = service.updateFramework(username, servicetype,framework, oldPassword, accountProperties);
-		if (x == 200)
-			return "Status = 200 : Framework Updated";
-
-		else if (x == 201)
-			return "Status = 201 : Framework Created";
-
-		else
-			return "Status : " + Integer.toString(x) + "\n Problem occured while updating Framework";
-	}
 	@PostMapping(path = "/workspaces/{username}/{servicetype}/{framework}/{zdirvar}/{oldPassword}")
 	public String addFramework(@PathVariable String username, @PathVariable String servicetype,@PathVariable String framework,@PathVariable String  zdirvar, @PathVariable String oldPassword,
-			@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+			@RequestPart(value = "file", required = true) MultipartFile file,@RequestPart(value = "json", required = true) String configframework) throws IOException {
 	
-		int x = service.postFiles(username, servicetype,framework, zdirvar, oldPassword, file);
+		int x = service.frameworkPOST(username, servicetype,framework, zdirvar, oldPassword, file,configframework);
 		if (x == 200)
 			return "Status = 200 : Framework Updated";
 
