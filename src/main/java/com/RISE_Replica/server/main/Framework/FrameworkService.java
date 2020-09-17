@@ -11,6 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import com.github.underscore.lodash.U;
 
@@ -88,7 +89,7 @@ public class FrameworkService {
 			 throws IOException
 	{     
 		
-		 JSONObject configuration = new JSONObject(configframework);
+		 JSONObject configuration = new JSONObject(configframework.toLowerCase());
 		 byte [] byteArr=file.getBytes();
 
    	  List<ZipEntry> entries = new ArrayList<>();
@@ -200,16 +201,22 @@ public class FrameworkService {
 	json.put("ConfigFramework", jsonObject);
 		
 		
-		 updateFramework( username,  servicetype,  framework,  oldPassword,  json.toString() );
-		 postFiles( username,  servicetype,  framework,zdirvar,  oldPassword,  file); 
-		
-	return 0;
+		int responsePUT = updateFramework( username,  servicetype,  framework,  oldPassword,  json.toString() , configuration);
+		int responsePOST = 0;
+		if(responsePUT == 200 || responsePUT == 201)
+		{
+		 responsePOST = postFiles( username,  servicetype,  framework,zdirvar,  oldPassword,  file);
+				}
+		if((responsePUT == 200 || responsePUT == 201) && responsePOST == 200 )
+		return 200;
+		else
+			return -1;
 	}
 
 	
 
 	private int postFiles(String username, String servicetype, String framework, String zdirvar, String oldPassword,
-			MultipartFile file) {
+			MultipartFile file) throws IOException {
 		String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		URL = URL.concat("/");
@@ -249,30 +256,30 @@ public class FrameworkService {
 	        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 	        message = e.getMessage();
 	    }
-//	    if( response.getStatusCodeValue()==200)
-//	    { Connection connection = ConnectionFactory.getConnection();
-//	    	try{
-//	    		
-//	    		InputStream initialStream = file.getInputStream();
-//	 
-//				String sql = "UPDATE framework SET  inputfiles = ? where frameworkname = ? and servicename= ? and workspacename = ?";
-//				
-//				PreparedStatement pstmt = connection.prepareStatement(sql);
-//				pstmt.setBinaryStream(1, initialStream);;
-//				pstmt.setString(2, framework);
-//	            pstmt.setString(3, servicetype);
-//	            pstmt.setString(4, username);
-//	            pstmt.executeUpdate();
-//			
-//			}
-//	    	catch (SQLException e) {
-//	            System.out.println("SQLException in get() method");
-//	            e.printStackTrace();
-//	        } finally {
-//	            DbUtil.close(connection);
-//	        }
-//				
-//	    }
+	    if( response.getStatusCodeValue()==200)
+	    { Connection connection = ConnectionFactory.getConnection();
+	    	try{
+	    		
+	    		InputStream initialStream = file.getInputStream();
+	 
+				String sql = "UPDATE framework SET  inputfiles = ? where modelname = ? and simulator= ? and authorname = ?";
+				
+				PreparedStatement pstmt = connection.prepareStatement(sql);
+				pstmt.setBinaryStream(1, initialStream);;
+				pstmt.setString(2, framework);
+	            pstmt.setString(3, servicetype);
+	            pstmt.setString(4, username);
+	            pstmt.executeUpdate();
+			
+			}
+	    	catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+				
+	    }
 	    System.out.println(message);
 		return response.getStatusCodeValue();
 		
@@ -331,9 +338,9 @@ public class FrameworkService {
 			return responseCode;
 	}
 
-	public int updateFramework(String username, String servicetype, String framework, String oldPassword, String json) 
+	public int updateFramework(String username, String servicetype, String framework, String oldPassword, String json, JSONObject configuration) 
 			 throws IOException
-	{ 
+	{ 	
 		 String URL =  "http://vs1.sce.carleton.ca:8080/cdpp/sim/workspaces" ;
 
 		  String xml = U.jsonToXml(json.toString());
@@ -371,54 +378,55 @@ public class FrameworkService {
 
 		int responseCode = con.getResponseCode();
 		System.out.println("PUT Response Code :: " + responseCode);
-//
-//		if (responseCode == 200)//update
-//		{ Connection connection = ConnectionFactory.getConnection();
-//			try{
-//				String sql = "UPDATE framework SET  xmlstring = ? where frameworkname = ? and servicename= ? and workspacename = ?";
-//				
-//				PreparedStatement pstmt = connection.prepareStatement(sql);
-//				pstmt.setString(1, xml);
-//				pstmt.setString(2, framework);
-//	            pstmt.setString(3, servicetype);
-//	            pstmt.setString(4, username);
-//	            
-//	            
-//
-//	            pstmt.executeUpdate();
-//			
-//			}
-//			catch (SQLException e) {
-//	            System.out.println("SQLException in get() method");
-//	            e.printStackTrace();
-//	        } finally {
-//	            DbUtil.close(connection);
-//	        }
-//				
-//		}
-//		else if (responseCode == 201)//create
-//		{ Connection connection = ConnectionFactory.getConnection();
-//			try{
-//				String sql = "INSERT INTO framework(frameworkname,servicename, workspacename, xmlstring) VALUES (?, ?, ?, ?)";
-//				
-//				PreparedStatement pstmt = connection.prepareStatement(sql);
-//	            pstmt.setString(1, framework);
-//	            pstmt.setString(2, servicetype);
-//	            pstmt.setString(3, username);
-//	            pstmt.setString(4, xml);
-//	            
-//
-//	            pstmt.executeUpdate();
-//			
-//			}
-//			catch (SQLException e) {
-//	            System.out.println("SQLException in get() method");
-//	            e.printStackTrace();
-//	        } finally {
-//	            DbUtil.close(connection);
-//	        }
-//			
-//		}
+
+		if (responseCode == 200)//update
+		{ Connection connection = ConnectionFactory.getConnection();
+			try{
+				String sql = "UPDATE framework SET  description = ? where modelname = ? and simulator= ? and authorname = ?";
+				
+				PreparedStatement pstmt = connection.prepareStatement(sql);
+				pstmt.setString(1,  (String) configuration.get("description"));
+				pstmt.setString(2, framework);
+	            pstmt.setString(3, servicetype);
+	            pstmt.setString(4, username);
+	           
+	            pstmt.executeUpdate();
+			
+			}
+			catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+				
+		}
+		else if (responseCode == 201)//create
+		{ Connection connection = ConnectionFactory.getConnection();
+			try{
+				String sql = "INSERT INTO public.framework" + 
+						"(modelname, simulator, authorname, datecreated, description)" + 
+						"VALUES(?,?,?,?,?);\n" ;
+				java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
+				PreparedStatement pstmt = connection.prepareStatement(sql);
+	            pstmt.setString(1, framework);
+	            pstmt.setString(2, servicetype);
+	            pstmt.setString(3, username);
+	            pstmt.setTimestamp(4, date);
+	            pstmt.setString(5, (String) configuration.get("description"));
+	            
+
+	            pstmt.executeUpdate();
+			
+			}
+			catch (SQLException e) {
+	            System.out.println("SQLException in get() method");
+	            e.printStackTrace();
+	        } finally {
+	            DbUtil.close(connection);
+	        }
+			
+		}
 		if (responseCode == HttpURLConnection.HTTP_OK) { //success
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					con.getInputStream()));
